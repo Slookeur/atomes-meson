@@ -1,0 +1,4 @@
+#define FC "@FC@"
+#define FCFLAGS "@FCFLAGS@"
+#define CC "@CC@"
+#define CFLAGS "@CFLAGS@"
