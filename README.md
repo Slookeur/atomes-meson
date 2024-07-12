@@ -33,13 +33,14 @@ Atomes offers a user-friendly assistant to help and guide the user step by step 
 To build ***Atomes***: 
 
 ```
-./configure
+meson setup buildir
 ```
 
 Followed by:
 
 ```
-make
+cd buildir
+meson compile
 ```
 
 ### Build options
@@ -50,19 +51,20 @@ make
 
 To do that:
 
-  1. Configure using the `--with-gtk=` flag:
+  1. Configure using the `gtk=4` option:
 
 ```
-./configure --with-gtk=4
+meson setup buildir -Dgtk=4
 ```
 
-Note the default flag is: `--with-gtk=3`
+Note the default flag is: `gtk=3`
 
 
   2. Build ***Atomes***
 
 ```
-make
+cd buildir
+meson compile
 ```
 
 Here are some issues with GTK4 that cannot be sovled for the time being:
@@ -74,21 +76,21 @@ By default ***Atomes*** uses [OpenMP][openmp] to parallelize several calculation
 It is possible to turn this off, and to build a serial version of ***Atomes***, to do that:
 
 ```
-./configure --disable-openmp
+meson setup buildir -Dopenmp=0
 ```
 
 
   3. Build ***Atomes***
 
 ```
-./configure
-make
+cd buildir
+meson compile
 ```
 
 ## Install ***Atomes***
 
 ```
-make install
+sudo meson install
 ```
 
 ## Who's behind ***Atomes***
