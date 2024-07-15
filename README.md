@@ -70,7 +70,7 @@ Here are some issues with GTK4 that cannot be sovled for the time being:
 
 #### Building the serial version of ***Atomes***
 
-By default ***Atomes*** uses [OpenMP][openmp] to parallelize several calculations over the CPU cores. 
+By default, and providing that the compiler supports it, ***Atomes*** uses [OpenMP][openmp] to parallelize several calculations over the CPU cores. 
 It is possible to turn this off, and to build a serial version of ***Atomes***, to do that:
 
 ```
