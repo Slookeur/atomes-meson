@@ -58,7 +58,6 @@ meson setup buildir -Dgtk=4
 
 Note the default flag is: `gtk=3`
 
-
   2. Build ***Atomes***
 
 ```
@@ -77,8 +76,7 @@ It is possible to turn this off, and to build a serial version of ***Atomes***, 
 meson setup buildir -Dopenmp=false
 ```
 
-
-  3. Build ***Atomes***
+  2. Build ***Atomes***
 
 ```
 meson compile -C buildir
