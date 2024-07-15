@@ -1,6 +1,5 @@
 #!/bin/sh
 
-echo 'PREFIX= '$1
 INSTALL_DIR=$1
 prog_metadir=${INSTALL_DIR}/metainfo
 prog_desktopdir=${INSTALL_DIR}/applications

@@ -8,50 +8,57 @@ project ('atomes', 'c', 'fortran',
         license : 'AGPL-3.0-or-later', 
         version : '1.1.15')
 
-gtk_version = get_option('gtk')
-if gtk_version == 3
-  gtk = dependency ('gtk+-3.0')
-  add_project_arguments ('-DGTK3', language : 'c')
-  add_project_arguments ('-DMENU_ICONS', language : 'c')
-else 
-  gtk = dependency ('gtk4')
-  add_project_arguments ('-DGTK4', language : 'c')
-endif
 xml = dependency ('libxml-2.0')
 pangoft = dependency ('pangoft2')
-glu = dependency ('glu')
 epoxy = dependency ('epoxy')
 avutil = dependency ('libavutil')
 avcodec = dependency ('libavcodec')
 avformat = dependency ('libavformat')
 swscale = dependency ('libswscale')
 ffmpeg = [avutil, avcodec, avformat, swscale]
-alldeps = [gtk, xml, pangoft, glu, epoxy, ffmpeg]
+all_deps = [xml, pangoft, epoxy, ffmpeg]
+
+system = host_machine.system()
+if system == 'darwin'
+  add_project_arguments ('-DOSX', language : 'c')
+  gtk = dependency ('gtk4')
+  add_project_arguments ('-DGTK4', language : 'c')
+else
+  gtk_version = get_option('gtk')
+  if gtk_version == 3
+    gtk = dependency ('gtk+-3.0')
+    add_project_arguments ('-DGTK3', language : 'c')
+    add_project_arguments ('-DMENU_ICONS', language : 'c')
+  else 
+    gtk = dependency ('gtk4')
+    add_project_arguments ('-DGTK4', language : 'c')
+  endif
+  if system == 'linux'
+    glu = dependency ('glu')
+    all_deps = [all_deps, glu]
+    add_project_arguments ('-DLINUX', language : 'c')
+    au = find_program ('appstream-util', required : true)
+    dfi = find_program ('desktop-file-install', required : true)
+    guic = find_program ('gtk-update-icon-cache', required : true)
+    udd = find_program ('update-desktop-database', required : true)
+    umd = find_program ('update-mime-database', required : true)
+  elif system == 'windows'
+    res = find_program ('windres', required : false)
+    add_project_arguments ('-DWINDOWS', language : 'c')
+  endif
+endif
+all_deps = [all_deps, gtk]
 
 use_openmp = get_option('openmp')
 if use_openmp
   omp = dependency('openmp', required : false)
   if omp.found ()
-    alldeps = [alldeps, omp]
+    all_deps = [all_deps, omp]
     add_project_arguments ('-DOPENMP', language : 'c')
     add_project_arguments ('-DOPENMP', language : 'fortran')
   else
     message ('OpenMP not found: turning OpenMP off')
   endif
-endif
-
-system = host_machine.system()
-if system == 'linux'
-  add_project_arguments ('-DLINUX', language : 'c')
-  au = find_program ('appstream-util', required : true)
-  dfi = find_program ('desktop-file-install', required : true)
-  guic = find_program ('gtk-update-icon-cache', required : true)
-  udd = find_program ('update-desktop-database', required : true)
-  umd = find_program ('update-mime-database', required : true)
-elif system == 'windows'
-  add_project_arguments ('-DWINDOWS', language : 'c')
-elif system == 'darwin'
-  add_project_arguments ('-DOSX', language : 'c')
 endif
 
 prog_name = meson.project_name()
@@ -74,6 +81,14 @@ conf_data.set ('PACKAGE_URL', 'https://atomes.ipcms.fr')
 conf_data.set ('PACKAGE_BUGREPORT', 'atomes@ipcms.unistra.fr')
 
 configure_file (input : 'src/config.h.in', output : 'config.h', configuration : conf_data)
+if system == 'windows' 
+  if res.found()
+    configure_file (input : 'misc/win/atomes.rc.in', output : 'atomes.rc', configuration : conf_data)
+    src_rc = ['atomes.rc']
+  endif
+elif system == 'darwin'
+  configure_file (input : 'misc/macos/Info.plist.in', output : 'Info.plist', configuration : conf_data)
+endif
 
 build_type = get_option('buildtype')
 message ('Buildtype: ', build_type)
@@ -104,7 +119,8 @@ add_project_arguments ('-DGTKGLAREA', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'fortran')
 
-package_prefix = get_option ('prefix') / get_option ('datadir') / 'atomes'
+data_prefix = get_option ('prefix') / get_option ('datadir')
+package_prefix =  data_prefix / 'atomes'
 d_package_prefix = ''.join ('-DPACKAGE_PREFIX="', package_prefix, '"')
 add_project_arguments (d_package_prefix, language : 'c')
 package_libexec = get_option ('libexecdir')
@@ -407,7 +423,7 @@ src_test = ['src/startup-testing/startup_testing.c']
 executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: [gtk, glu, epoxy], 
 	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : package_libexec) 
 
-executable (prog_name, sources : [src_c, src_f], include_directories : inc_dir, dependencies: alldeps, 
+executable (prog_name, sources : [src_c, src_f], include_directories : inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true)
 
 # Manual page
@@ -437,4 +453,15 @@ install_data ('ChangeLog', install_dir : data_dir / 'doc/atomes')
 install_data ('atomes-completion.sh', rename : 'atomes', install_dir : data_dir / 'bash-completion/completions')
 
 # Post installation
-meson.add_install_script ('post_install.sh', get_option('prefix'))
+if system == 'linux'
+  meson.add_install_script ('misc/linux/post_install.sh', data_prefix)
+elif system == 'darwin'
+  install_data('misc/macos/atomes.icns', install_dir : 'Contents/Resources')
+  install_data('misc/macos/atomes-workspace.icns', install_dir : 'Contents/Resources')
+  install_data('misc/macos/atomes-project.icns', install_dir : 'Contents/Resources')
+  install_data('misc/macos/atomes-coordinates.icns', install_dir : 'Contents/Resources')
+#  install_data('misc/macos/PkgInfo', install_dir : 'Contents')
+  install_data('Info.plist', install_dir : 'Contents')
+  install_data('misc/macos/atomes.sh', install_dir : 'Contents/MacOS')
+  meson.add_install_script ('misc/macos/install_lib.sh')
+endif

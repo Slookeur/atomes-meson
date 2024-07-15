@@ -12,9 +12,9 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/> */
 
 #include <winver.h>
-#include "../../config.h"
+#include <config.h>
 
-ATOMES_ICON		ICON		"../win/atomes.ico"
+ATOMES_ICON		ICON		"../misc/win/atomes.ico"
 
 VS_VERSION_INFO VERSIONINFO
   FILEVERSION    PACKAGE_VERSION,0
