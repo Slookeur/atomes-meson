@@ -1,2 +1,2 @@
-option('gtk', type: 'integer', value :3, description : 'Version of the GTK library')
-option('openmp', type: 'integer', value :1, description : 'Use OpenMP parallel programming')
+option('gtk', type: 'integer', value : 3, description : 'Version of the GTK library')
+option('openmp', type: 'boolean', value : true, description : 'Use OpenMP parallel programming')

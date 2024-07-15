@@ -3,13 +3,16 @@
 # - 'meson_options.txt' (meson < 1.1.0)
 # - 'meson.options'     (meson >= 1.1.0)
 
-project ('atomes', 'c', 'fortran', default_options : ['gtk=3', 'openmp=1'], license : 'AGPL-3.0-or-later', version : '1.1.15')
-version_array = meson.project_version().split('.')
+project ('atomes', 'c', 'fortran', 
+        default_options : ['gtk=3', 'openmp=true'], 
+        license : 'AGPL-3.0-or-later', 
+        version : '1.1.15')
 
 gtk_version = get_option('gtk')
 if gtk_version == 3
   gtk = dependency ('gtk+-3.0')
   add_project_arguments ('-DGTK3', language : 'c')
+  add_project_arguments ('-DMENU_ICONS', language : 'c')
 else 
   gtk = dependency ('gtk4')
   add_project_arguments ('-DGTK4', language : 'c')
@@ -26,7 +29,7 @@ ffmpeg = [avutil, avcodec, avformat, swscale]
 alldeps = [gtk, xml, pangoft, glu, epoxy, ffmpeg]
 
 use_openmp = get_option('openmp')
-if use_openmp == 1
+if use_openmp
   omp = dependency('openmp', required : false)
   if omp.found ()
     alldeps = [alldeps, omp]
@@ -52,10 +55,11 @@ elif system == 'darwin'
 endif
 
 prog_name = meson.project_name()
+prog_version = meson.project_version()
+version_array = prog_version.split('.')
 prog_major = version_array[0]
 prog_minor = version_array[1]
 prog_patch = version_array[2]
-prog_version = meson.project_version()
 prog_string = ' '.join(prog_name, prog_version)
 conf_data = configuration_data ()
 conf_data.set ('ATOMES_MAJOR_VERSION', prog_major)
@@ -72,6 +76,7 @@ conf_data.set ('PACKAGE_BUGREPORT', 'atomes@ipcms.unistra.fr')
 configure_file (input : 'src/config.h.in', output : 'config.h', configuration : conf_data)
 
 build_type = get_option('buildtype')
+message ('Buildtype: ', build_type)
 if build_type == 'release'
  compiler_args = ['-O3', '-g']
  flags = '-O3 -g'
@@ -79,8 +84,8 @@ elif build_type == 'debug'
  compiler_args = ['-O0', '-g3', '-fvar-tracking', '-fbounds-check', '-fstack-protector-all']
  flags = '-O0 -g3 -fvar-tracking -fbounds-check -fstack-protector-all'
 else
- compiler_args =
- flags = 
+ compiler_args = [ '-O2', '-g']
+ flags = '-O2 -g'
 endif
 
 flag_data = configuration_data ()
@@ -106,10 +111,11 @@ package_libexec = get_option ('libexecdir')
 d_package_libexec = ''.join ('-DPACKAGE_LIBEXEC="', package_libexec, '"')
 add_project_arguments (d_package_libexec, language : 'c')
 
-inc_dir = include_directories('.', 'src', 'src/gui', 
+all_inc = ['.', 'src', 'src/gui', 
 	'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
         'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
-        'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw')
+        'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
+inc_dir = include_directories(all_inc)
 
 src_top = ['src/global.c']
 
