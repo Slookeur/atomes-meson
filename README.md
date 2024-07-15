@@ -39,8 +39,7 @@ meson setup buildir
 Followed by:
 
 ```
-cd buildir
-meson compile
+meson compile -C buildir
 ```
 
 ### Build options
@@ -63,8 +62,7 @@ Note the default flag is: `gtk=3`
   2. Build ***Atomes***
 
 ```
-cd buildir
-meson compile
+meson compile -C buildir
 ```
 
 Here are some issues with GTK4 that cannot be sovled for the time being:
@@ -76,21 +74,20 @@ By default ***Atomes*** uses [OpenMP][openmp] to parallelize several calculation
 It is possible to turn this off, and to build a serial version of ***Atomes***, to do that:
 
 ```
-meson setup buildir -Dopenmp=0
+meson setup buildir -Dopenmp=false
 ```
 
 
   3. Build ***Atomes***
 
 ```
-cd buildir
-meson compile
+meson compile -C buildir
 ```
 
 ## Install ***Atomes***
 
 ```
-sudo meson install
+sudo meson install -C buildir
 ```
 
 ## Who's behind ***Atomes***
