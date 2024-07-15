@@ -783,6 +783,9 @@ int main (int argc, char *argv[])
       // No way to initialize an OpenGL context: must quit
       return 1;
     }
+#ifdef OSX
+    g_setenv ("GSK_RENDERER", "gl", TRUE);
+#endif
     atomes_visual = ! (abs(atomes_visual));
 
     // setlocale(LC_ALL,"en_US");
