@@ -84,7 +84,7 @@ configure_file (input : 'src/config.h.in', output : 'config.h', configuration : 
 if system == 'windows' 
   if res.found()
     configure_file (input : 'misc/win/atomes.rc.in', output : 'atomes.rc', configuration : conf_data)
-    src_rc = ['atomes.rc']
+    src_rc = [meson.current_build_dir() / 'atomes.rc']
   endif
 elif system == 'darwin'
   configure_file (input : 'misc/macos/Info.plist.in', output : 'Info.plist', configuration : conf_data)
@@ -119,13 +119,15 @@ add_project_arguments ('-DGTKGLAREA', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'fortran')
 
-data_prefix = get_option ('prefix') / get_option ('datadir')
-package_prefix =  data_prefix / 'atomes'
-d_package_prefix = ''.join ('-DPACKAGE_PREFIX="', package_prefix, '"')
-add_project_arguments (d_package_prefix, language : 'c')
-package_libexec = get_option ('libexecdir')
-d_package_libexec = ''.join ('-DPACKAGE_LIBEXEC="', package_libexec, '"')
-add_project_arguments (d_package_libexec, language : 'c')
+if system != 'windows'
+  data_prefix = get_option ('prefix') / get_option ('datadir')
+  package_prefix =  data_prefix / 'atomes'
+  d_package_prefix = ''.join ('-DPACKAGE_PREFIX="', package_prefix, '"')
+  add_project_arguments (d_package_prefix, language : 'c')
+  package_libexec = get_option ('libexecdir')
+  d_package_libexec = ''.join ('-DPACKAGE_LIBEXEC="', package_libexec, '"')
+  add_project_arguments (d_package_libexec, language : 'c')
+endif
 
 all_inc = ['.', 'src', 'src/gui', 
 	'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
@@ -428,11 +430,12 @@ if system == 'windows'
   src_win = windows.compile_resources (src_rc)
   src_all = [src_all, src_win]
   src_test = [src_test, src_win]
-endif
-
-executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: [gtk, glu, epoxy], 
+  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: [gtk, epoxy], 
+	c_args: compiler_args, fortran_args: compiler_args, install : true) 
+else
+  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: [gtk, epoxy], 
 	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : package_libexec) 
-
+endif
 executable (prog_name, sources : src_all, include_directories : inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true)
 

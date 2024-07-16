@@ -369,7 +369,6 @@ void open_this_data_file (int file_type, gchar * file_name)
           for (i=1; i<strlen(file_name)-1; i++) filedir = g_strdup_printf ("%s%c", filedir, file_name[i]);
         }
 #ifdef G_OS_WIN32
-        ffd;
         hFind = FindFirstFile (filedir, & ffd);
         if (hFind != INVALID_HANDLE_VALUE)
         {
@@ -431,7 +430,6 @@ void open_this_data_file (int file_type, gchar * file_name)
           for (i=1; i<strlen(file_name)-1; i++) filedir = g_strdup_printf ("%s%c", filedir, file_name[i]);
         }
 #ifdef G_OS_WIN32
-        ffd;
         hFind = FindFirstFile (filedir, & ffd);
         if (hFind != INVALID_HANDLE_VALUE)
         {
@@ -491,11 +489,11 @@ void open_this_data_file (int file_type, gchar * file_name)
 G_MODULE_EXPORT void run_program (GApplication * app, gpointer data)
 {
   GtkSettings * default_settings = gtk_settings_get_default ();
+#ifndef G_OS_WIN32
+  g_object_set (default_settings, "gtk-application-prefer-dark-theme", TRUE, NULL);
+#endif
 #ifdef GTK3
   g_object_set (default_settings, "gtk-button-images", TRUE, NULL);
-  g_object_set (default_settings, "gtk-application-prefer-dark-theme", TRUE, NULL);
-#else
-  g_object_set (default_settings, "gtk-application-prefer-dark-theme", TRUE, NULL);
 #endif
 #ifdef G_OS_WIN32
 #ifdef GTK3
@@ -572,7 +570,7 @@ int check_opengl_rendering ()
   GError * error = NULL;
   gchar * proc_name;
 #ifdef G_OS_WIN32
-  proc_name = g_build_filename (PACKAGE_PREFIX, "atomes_startup_testing", NULL);
+  proc_name = g_build_filename (PACKAGE_PREFIX, "bin", "atomes_startup_testing.exe", NULL);
 #else
   proc_name = g_build_filename (PACKAGE_LIBEXEC, "atomes_startup_testing", NULL);
 #endif
@@ -617,7 +615,9 @@ int main (int argc, char *argv[])
   gboolean RUNC = FALSE;
 
 #ifdef G_OS_WIN32
+#ifndef DEBUG
   FreeConsole ();
+#endif
   PACKAGE_PREFIX = g_win32_get_package_installation_directory_of_module (NULL);
   // g_win32_get_package_installation_directory (NULL, NULL);
 #endif
