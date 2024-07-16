@@ -246,7 +246,7 @@ src_work = ['src/workspace/modelinfo.c',
 	'src/workspace/workinfo.c', 
         'src/workspace/workspace.c']
 
-src_win = ['src/opengl/win/color_box.c', 
+src_wingl = ['src/opengl/win/color_box.c', 
 	'src/opengl/win/m_style.c', 
 	'src/opengl/win/m_map.c', 
 	'src/opengl/win/m_render.c', 
@@ -333,7 +333,7 @@ src_opengl = ['src/opengl/arcball.c',
 	'src/opengl/ogl_shaders.c', 
 	'src/opengl/ogl_shading.c', 
 	'src/opengl/ogl_draw.c', 
-	'src/opengl/glview.c' , src_draw, src_win, src_edit]
+	'src/opengl/glview.c' , src_draw, src_wingl, src_edit]
 
 src_c = [src_top, src_gui, src_calc, src_curve, src_proj, src_work, src_opengl]
 
@@ -418,12 +418,22 @@ src_f = ['src/fortran/allocbonds.F90',
 	'src/fortran/writedata.F90', 
 	'src/fortran/xyz.F90']
 
+# atomes sources
+src_all = [src_c, src_f]
+# atomes OpenGL test utility
 src_test = ['src/startup-testing/startup_testing.c']
+
+if system == 'windows'
+  windows = import('windows')
+  src_win = windows.compile_resources (src_rc)
+  src_all = [src_all, src_win]
+  src_test = [src_test, src_win]
+endif
 
 executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: [gtk, glu, epoxy], 
 	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : package_libexec) 
 
-executable (prog_name, sources : [src_c, src_f], include_directories : inc_dir, dependencies: all_deps, 
+executable (prog_name, sources : src_all, include_directories : inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true)
 
 # Manual page
@@ -435,33 +445,31 @@ data_dir = get_option ('datadir')
 install_subdir ('data/pixmaps', install_dir: data_dir / 'atomes')
 install_subdir ('data/libraries', install_dir : data_dir / 'atomes')
 
+if system != 'windows'
+  if system == 'linux'
 # Metadata
-install_data ('metadata/icons/atomes.svg', install_dir : data_dir / 'pixmaps')
-install_data ('metadata/icons/atomes-workspace.svg', install_dir : data_dir / 'pixmaps')
-install_data ('metadata/icons/atomes-project.svg', install_dir : data_dir / 'pixmaps')
-install_data ('metadata/icons/atomes-coordinates.svg', install_dir : data_dir / 'pixmaps')
-install_data ('metadata/atomes-mime.xml', install_dir : data_dir / 'mime/packages')
-install_data ('metadata/fr.ipcms.atomes.appdata.xml', install_dir : data_dir / 'metainfo')
-install_data ('metadata/atomes.desktop', install_dir :  data_dir / 'applications')
-
-# Doc
-install_data ('README.md', install_dir : data_dir / 'doc/atomes')
-install_data ('AUTHORS', install_dir : data_dir / 'doc/atomes')
-install_data ('ChangeLog', install_dir : data_dir / 'doc/atomes')
-
-# Bash completion
-install_data ('atomes-completion.sh', rename : 'atomes', install_dir : data_dir / 'bash-completion/completions')
-
-# Post installation
-if system == 'linux'
+  install_data ('metadata/icons/atomes.svg', install_dir : data_dir / 'pixmaps')
+  install_data ('metadata/icons/atomes-workspace.svg', install_dir : data_dir / 'pixmaps')
+  install_data ('metadata/icons/atomes-project.svg', install_dir : data_dir / 'pixmaps')
+  install_data ('metadata/icons/atomes-coordinates.svg', install_dir : data_dir / 'pixmaps')
+  install_data ('metadata/atomes-mime.xml', install_dir : data_dir / 'mime/packages')
+  install_data ('metadata/fr.ipcms.atomes.appdata.xml', install_dir : data_dir / 'metainfo')
+  install_data ('metadata/atomes.desktop', install_dir :  data_dir / 'applications')
   meson.add_install_script ('misc/linux/post_install.sh', data_prefix)
-elif system == 'darwin'
-  install_data('misc/macos/atomes.icns', install_dir : 'Contents/Resources')
-  install_data('misc/macos/atomes-workspace.icns', install_dir : 'Contents/Resources')
-  install_data('misc/macos/atomes-project.icns', install_dir : 'Contents/Resources')
-  install_data('misc/macos/atomes-coordinates.icns', install_dir : 'Contents/Resources')
+  elif system == 'darwin'
+    install_data('misc/macos/atomes.icns', install_dir : 'Contents/Resources')
+    install_data('misc/macos/atomes-workspace.icns', install_dir : 'Contents/Resources')
+    install_data('misc/macos/atomes-project.icns', install_dir : 'Contents/Resources')
+    install_data('misc/macos/atomes-coordinates.icns', install_dir : 'Contents/Resources')
 #  install_data('misc/macos/PkgInfo', install_dir : 'Contents')
-  install_data('Info.plist', install_dir : 'Contents')
-  install_data('misc/macos/atomes.sh', install_dir : 'Contents/MacOS')
-  meson.add_install_script ('misc/macos/install_lib.sh')
+    install_data('Info.plist', install_dir : 'Contents')
+    install_data('misc/macos/atomes.sh', install_dir : 'Contents/MacOS')
+    meson.add_install_script ('misc/macos/install_lib.sh')
+  endif
+# Doc
+  install_data ('README.md', install_dir : data_dir / 'doc/atomes')
+  install_data ('AUTHORS', install_dir : data_dir / 'doc/atomes')
+  install_data ('ChangeLog', install_dir : data_dir / 'doc/atomes')
+# Bash completion
+  install_data ('atomes-completion.sh', rename : 'atomes', install_dir : data_dir / 'bash-completion/completions')
 endif
