@@ -445,7 +445,12 @@ data_dir = get_option ('datadir')
 install_subdir ('data/pixmaps', install_dir: data_dir / 'atomes')
 install_subdir ('data/libraries', install_dir : data_dir / 'atomes')
 
-if system != 'windows'
+if system == 'windows'
+# Doc
+  install_data ('README.md', install_dir : data_dir / 'atomes')
+  install_data ('AUTHORS', install_dir : data_dir / 'atomes')
+  install_data ('ChangeLog', install_dir : data_dir / 'atomes')
+else
   if system == 'linux'
 # Metadata
   install_data ('metadata/icons/atomes.svg', install_dir : data_dir / 'pixmaps')
