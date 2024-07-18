@@ -54,7 +54,6 @@ Copyright (C) 2022-2024 by CNRS and University of Strasbourg */
 #include <libavutil/avutil.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
-
 #include "version.h"
 #include "global.h"
 #include "bind.h"
@@ -568,17 +567,39 @@ G_MODULE_EXPORT void run_program (GApplication * app, gpointer data)
 int check_opengl_rendering ()
 {
   GError * error = NULL;
-  gchar * proc_name;
+  gchar * proc_dir = NULL;
 #ifdef G_OS_WIN32
-  proc_name = g_build_filename (PACKAGE_PREFIX, "bin", "atomes_startup_testing.exe", NULL);
+  proc_dir = g_build_filename (PACKAGE_PREFIX, "bin", NULL);
+  const char * proc_name = "atomes_startup_testing.exe";
 #else
-  proc_name = g_build_filename (PACKAGE_LIBEXEC, "atomes_startup_testing", NULL);
+  proc_dir = g_build_filename (PACKAGE_LIBEXEC, NULL);
+  const char * proc_name = "atomes_startup_testing";
 #endif
-  GSubprocess * proc = g_subprocess_new (G_SUBPROCESS_FLAGS_NONE, & error, proc_name, NULL);
-  g_free (proc_name);
+  // g_print ("proc_dir= %s\n", proc_dir);
+  gchar * proc_path = g_build_filename (proc_dir, proc_name, NULL);
+  // g_print ("proc_path= %s\n", proc_path);
+#ifdef CODEBLOCKS
+  GSubprocess * proc = g_subprocess_new (G_SUBPROCESS_FLAGS_NONE, & error, proc_path, NULL);
+#else
+  GSubprocessLauncher * proc_launch = g_subprocess_launcher_new (G_SUBPROCESS_FLAGS_NONE);
+  g_subprocess_launcher_set_cwd (proc_launch, proc_dir);
+  GSubprocess * proc = g_subprocess_launcher_spawn (proc_launch, & error, proc_name, NULL);
+#endif
+  // g_print ("subprocess: %p\n", proc);
+  if (error)
+  {
+    g_print ("error: %s\n", error -> message);
+    g_clear_error (& error);
+  }
   g_subprocess_wait (proc, NULL, & error);
-  gchar * ogl_info = NULL;
   int res = g_subprocess_get_exit_status (proc);
+  g_clear_object (& proc);
+#ifndef CODEBLOCKS
+  g_clear_object (& proc_launch);
+#endif
+  g_free (proc_path);
+  g_free (proc_dir);
+  gchar * ogl_info = NULL;
   switch (res)
   {
     case 1:
@@ -766,7 +787,6 @@ int main (int argc, char *argv[])
       }
       break;
   }
-
 
   if (RUNC)
   {

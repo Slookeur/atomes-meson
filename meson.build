@@ -17,6 +17,14 @@ avformat = dependency ('libavformat')
 swscale = dependency ('libswscale')
 ffmpeg = [avutil, avcodec, avformat, swscale]
 all_deps = [xml, pangoft, epoxy, ffmpeg]
+all_test = [epoxy]
+
+system = host_machine.system()
+if system != 'windows'
+  glu = dependency ('glu')
+  all_deps = [all_deps, glu]
+  all_test = [all_test, glu]
+endif
 
 system = host_machine.system()
 if system == 'darwin'
@@ -34,8 +42,6 @@ else
     add_project_arguments ('-DGTK4', language : 'c')
   endif
   if system == 'linux'
-    glu = dependency ('glu')
-    all_deps = [all_deps, glu]
     add_project_arguments ('-DLINUX', language : 'c')
     au = find_program ('appstream-util', required : true)
     dfi = find_program ('desktop-file-install', required : true)
@@ -48,6 +54,7 @@ else
   endif
 endif
 all_deps = [all_deps, gtk]
+all_test = [all_test, gtk]
 
 use_openmp = get_option('openmp')
 if use_openmp
@@ -84,10 +91,13 @@ configure_file (input : 'src/config.h.in', output : 'config.h', configuration : 
 if system == 'windows' 
   if res.found()
     configure_file (input : 'misc/win/atomes.rc.in', output : 'atomes.rc', configuration : conf_data)
+    configure_file (input : 'misc/win/startup.rc.in', output : 'startup.rc', configuration : conf_data)
     src_rc = [meson.current_build_dir() / 'atomes.rc']
+    test_rc = [meson.current_build_dir() / 'startup.rc']
   endif
 elif system == 'darwin'
   configure_file (input : 'misc/macos/Info.plist.in', output : 'Info.plist', configuration : conf_data)
+  src_info = [meson.current_build_dir() / 'Info.plist']
 endif
 
 build_type = get_option('buildtype')
@@ -119,12 +129,26 @@ add_project_arguments ('-DGTKGLAREA', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'fortran')
 
+if system == 'darwin'
+  res_dir = 'Contents/Resources'
+  data_dir = res_dir / 'share'
+  exec_dir = res_dir / get_option ('libexecdir')
+else
+  data_dir = get_option ('datadir')
+  exec_dir = get_option ('libexecdir')
+endif
+
 if system != 'windows'
-  data_prefix = get_option ('prefix') / get_option ('datadir')
-  package_prefix =  data_prefix / 'atomes'
+  if system == 'linux'
+    data_prefix = get_option ('prefix') / data_dir
+    package_prefix =  data_prefix / 'atomes'
+    package_libexec = exec_dir
+  else
+    package_prefix = '..' / 'Resources' / 'share' / 'atomes'
+    package_libexec = '..' / 'Resources' / get_option ('libexecdir')
+  endif
   d_package_prefix = ''.join ('-DPACKAGE_PREFIX="', package_prefix, '"')
   add_project_arguments (d_package_prefix, language : 'c')
-  package_libexec = get_option ('libexecdir')
   d_package_libexec = ''.join ('-DPACKAGE_LIBEXEC="', package_libexec, '"')
   add_project_arguments (d_package_libexec, language : 'c')
 endif
@@ -429,11 +453,12 @@ if system == 'windows'
   windows = import('windows')
   src_win = windows.compile_resources (src_rc)
   src_all = [src_all, src_win]
-  src_test = [src_test, src_win]
-  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: [gtk, epoxy], 
+  test_win = windows.compile_resources (test_rc)
+  src_test = [src_test, test_win]
+  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_test, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true) 
 else
-  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: [gtk, epoxy], 
+  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : package_libexec) 
 endif
 executable (prog_name, sources : src_all, include_directories : inc_dir, dependencies: all_deps, 
@@ -465,13 +490,13 @@ else
   install_data ('metadata/atomes.desktop', install_dir :  data_dir / 'applications')
   meson.add_install_script ('misc/linux/post_install.sh', data_prefix)
   elif system == 'darwin'
-    install_data('misc/macos/atomes.icns', install_dir : 'Contents/Resources')
-    install_data('misc/macos/atomes-workspace.icns', install_dir : 'Contents/Resources')
-    install_data('misc/macos/atomes-project.icns', install_dir : 'Contents/Resources')
-    install_data('misc/macos/atomes-coordinates.icns', install_dir : 'Contents/Resources')
-#  install_data('misc/macos/PkgInfo', install_dir : 'Contents')
-    install_data('Info.plist', install_dir : 'Contents')
-    install_data('misc/macos/atomes.sh', install_dir : 'Contents/MacOS')
+    install_data('misc/macos/atomes.icns', install_dir : res_dir)
+    install_data('misc/macos/atomes-workspace.icns', install_dir : res_dir)
+    install_data('misc/macos/atomes-project.icns', install_dir : res_dir)
+    install_data('misc/macos/atomes-coordinates.icns', install_dir : res_dir)
+    install_data('misc/macos/PkgInfo', install_dir : 'Contents')
+    install_data(src_info, install_dir : 'Contents')
+    install_data('misc/macos/atomes.sh', install_dir : 'Contents/MacOS', rename : 'atomes')
     meson.add_install_script ('misc/macos/install_lib.sh')
   endif
 # Doc

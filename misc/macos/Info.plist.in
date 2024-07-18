@@ -5,13 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleName</key>
-	<string>@PACAKGE@</string>
+	<string>@PACKAGE@</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
         <key>CFBundleDisplayName</key>
         <string>@PACKAGE@</string>
 	<key>CFBundleExecutable</key>
-	<string>atomes.sh</string>
+	<string>@PACKAGE@</string>
 	<key>CFBundleIdentifier</key>
 	<string>fr.ipcms.atomes</string>
 	<key>CFBundleGetInfoString</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>@</string>
 	<key>CFBundleLongVersionString</key>
-	<string>@PACKAGE_VERISON@</string>
+	<string>@PACKAGE_VERSION@</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>CFBundleSignature</key>
