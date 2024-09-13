@@ -26,7 +26,6 @@ if system != 'windows'
   all_test = [all_test, glu]
 endif
 
-system = host_machine.system()
 if system == 'darwin'
   add_project_arguments ('-DOSX', language : 'c')
   gtk = dependency ('gtk4')
@@ -111,6 +110,9 @@ elif build_type == 'debug'
 else
  compiler_args = [ '-O2', '-g']
  flags = '-O2 -g'
+endif
+if system == 'darwin'
+  compiler_args = [compiler_args, '-Wl,@loader_path/../Resources/lib']
 endif
 
 flag_data = configuration_data ()
@@ -461,7 +463,12 @@ else
   executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : package_libexec) 
 endif
-executable (prog_name, sources : src_all, include_directories : inc_dir, dependencies: all_deps, 
+if system == 'darwin'
+  application = '-'.join(prog_name, 'bin')
+else
+  application = prog_name
+endif
+executable (application, sources : src_all, include_directories : inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true)
 
 # Manual page
@@ -471,7 +478,7 @@ data_dir = get_option ('datadir')
 
 # Data
 install_subdir ('data/pixmaps', install_dir: data_dir / 'atomes')
-install_subdir ('data/libraries', install_dir : data_dir / 'atomes')
+install_subdir ('data/library', install_dir : data_dir / 'atomes')
 
 if system == 'windows'
 # Doc
