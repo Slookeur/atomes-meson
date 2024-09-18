@@ -461,7 +461,7 @@ if system == 'windows'
 	c_args: compiler_args, fortran_args: compiler_args, install : true) 
 else
   executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_deps, 
-	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : package_libexec) 
+	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : exec_dir) 
 endif
 if system == 'darwin'
   application = '-'.join(prog_name, 'bin')
@@ -473,8 +473,6 @@ executable (application, sources : src_all, include_directories : inc_dir, depen
 
 # Manual page
 install_man ('atomes.1')
-
-data_dir = get_option ('datadir')
 
 # Data
 install_subdir ('data/pixmaps', install_dir: data_dir / 'atomes')
@@ -488,14 +486,14 @@ if system == 'windows'
 else
   if system == 'linux'
 # Metadata
-  install_data ('metadata/icons/atomes.svg', install_dir : data_dir / 'pixmaps')
-  install_data ('metadata/icons/atomes-workspace.svg', install_dir : data_dir / 'pixmaps')
-  install_data ('metadata/icons/atomes-project.svg', install_dir : data_dir / 'pixmaps')
-  install_data ('metadata/icons/atomes-coordinates.svg', install_dir : data_dir / 'pixmaps')
-  install_data ('metadata/atomes-mime.xml', install_dir : data_dir / 'mime/packages')
-  install_data ('metadata/fr.ipcms.atomes.appdata.xml', install_dir : data_dir / 'metainfo')
-  install_data ('metadata/atomes.desktop', install_dir :  data_dir / 'applications')
-  meson.add_install_script ('misc/linux/post_install.sh', data_prefix)
+    install_data ('metadata/icons/atomes.svg', install_dir : data_dir / 'pixmaps')
+    install_data ('metadata/icons/atomes-workspace.svg', install_dir : data_dir / 'pixmaps')
+    install_data ('metadata/icons/atomes-project.svg', install_dir : data_dir / 'pixmaps')
+    install_data ('metadata/icons/atomes-coordinates.svg', install_dir : data_dir / 'pixmaps')
+    install_data ('metadata/atomes-mime.xml', install_dir : data_dir / 'mime/packages')
+    install_data ('metadata/fr.ipcms.atomes.appdata.xml', install_dir : data_dir / 'metainfo')
+    install_data ('metadata/atomes.desktop', install_dir :  data_dir / 'applications')
+    meson.add_install_script ('misc/linux/post_install.sh', data_prefix)
   elif system == 'darwin'
     install_data('misc/macos/atomes.icns', install_dir : res_dir)
     install_data('misc/macos/atomes-workspace.icns', install_dir : res_dir)
