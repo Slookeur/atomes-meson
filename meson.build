@@ -90,9 +90,7 @@ configure_file (input : 'src/config.h.in', output : 'config.h', configuration : 
 if system == 'windows' 
   if res.found()
     configure_file (input : 'misc/win/atomes.rc.in', output : 'atomes.rc', configuration : conf_data)
-    configure_file (input : 'misc/win/startup.rc.in', output : 'startup.rc', configuration : conf_data)
     src_rc = [meson.current_build_dir() / 'atomes.rc']
-    test_rc = [meson.current_build_dir() / 'startup.rc']
   endif
 elif system == 'darwin'
   configure_file (input : 'misc/macos/Info.plist.in', output : 'Info.plist', configuration : conf_data)
@@ -129,6 +127,7 @@ configure_file (input : 'src/version.h.in', output : 'version.h', configuration 
 
 add_project_arguments ('-DGTKGLAREA', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'c')
+add_project_arguments ('-DGTK_DISABLE_DEPRECATED', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'fortran')
 
 if system == 'darwin'
@@ -455,14 +454,10 @@ if system == 'windows'
   windows = import('windows')
   src_win = windows.compile_resources (src_rc)
   src_all = [src_all, src_win]
-  test_win = windows.compile_resources (test_rc)
-  src_test = [src_test, test_win]
-  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_test, 
-	c_args: compiler_args, fortran_args: compiler_args, install : true) 
-else
-  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_deps, 
-	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : exec_dir) 
+  src_test = [src_test, src_win]
 endif
+executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_test, 
+	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : exec_dir) 
 if system == 'darwin'
   application = '-'.join(prog_name, 'bin')
 else
