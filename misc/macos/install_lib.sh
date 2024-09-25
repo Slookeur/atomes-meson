@@ -13,8 +13,8 @@ function lib_copy_dependency
 {
   local lib_path=$1
   local lib=`echo $1|sed 's/\// /g'|awk '{printf $NF}'`
-  echo "Library: "$lib", in : "$lib_path
   if [ ! -f $lib_dir/$lib ]; then
+    echo "Library: "$lib", in : "$lib_path
     cp -R -L $lib_path $lib_dir
     local liste_dolib=`otool -L $lib_dir/$lib|grep 'dylib'|grep 'opt'|awk '{printf $1" "}'`    
     local liste_dopath=`otool -L $lib_path|grep 'rpath'|grep 'dylib'|sed 's/@rpath//g'|awk '{printf $1" "}'`

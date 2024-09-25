@@ -90,7 +90,9 @@ configure_file (input : 'src/config.h.in', output : 'config.h', configuration : 
 if system == 'windows' 
   if res.found()
     configure_file (input : 'misc/win/atomes.rc.in', output : 'atomes.rc', configuration : conf_data)
+    configure_file (input : 'misc/win/startup.rc.in', output : 'startup.rc', configuration : conf_data)
     src_rc = [meson.current_build_dir() / 'atomes.rc']
+    test_rc = [meson.current_build_dir() / 'startup.rc']
   endif
 elif system == 'darwin'
   configure_file (input : 'misc/macos/Info.plist.in', output : 'Info.plist', configuration : conf_data)
@@ -110,7 +112,8 @@ else
  flags = '-O2 -g'
 endif
 if system == 'darwin'
-  compiler_args = [compiler_args, '-Wl,@loader_path/../Resources/lib']
+#  compiler_args = [compiler_args, '-Wl,@loader_path/../Resources/lib']
+#  compiler_args = [compiler_args, '-headerpad_max_install_names']
 endif
 
 flag_data = configuration_data ()
@@ -128,6 +131,7 @@ configure_file (input : 'src/version.h.in', output : 'version.h', configuration 
 add_project_arguments ('-DGTKGLAREA', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'c')
 add_project_arguments ('-DGTK_DISABLE_DEPRECATED', language : 'c')
+add_project_arguments ('-DGDK_DISABLE_DEPRECATION_WARNINGS', language : 'c')
 add_project_arguments ('-DHAVE_CONFIG_H', language : 'fortran')
 
 if system == 'darwin'
@@ -454,10 +458,14 @@ if system == 'windows'
   windows = import('windows')
   src_win = windows.compile_resources (src_rc)
   src_all = [src_all, src_win]
-  src_test = [src_test, src_win]
-endif
-executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_test, 
+  test_win = windows.compile_resources (test_rc)
+  src_test = [src_test, test_win]
+  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_test, 
+	c_args: compiler_args, fortran_args: compiler_args, install : true) 
+else
+  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : exec_dir) 
+endif
 if system == 'darwin'
   application = '-'.join(prog_name, 'bin')
 else
@@ -470,7 +478,7 @@ executable (application, sources : src_all, include_directories : inc_dir, depen
 install_man ('atomes.1')
 
 # Data
-install_subdir ('data/pixmaps', install_dir: data_dir / 'atomes')
+install_subdir ('data/pixmaps', install_dir : data_dir / 'atomes')
 install_subdir ('data/library', install_dir : data_dir / 'atomes')
 
 if system == 'windows'
@@ -490,13 +498,13 @@ else
     install_data ('metadata/atomes.desktop', install_dir :  data_dir / 'applications')
     meson.add_install_script ('misc/linux/post_install.sh', data_prefix)
   elif system == 'darwin'
-    install_data('misc/macos/atomes.icns', install_dir : res_dir)
-    install_data('misc/macos/atomes-workspace.icns', install_dir : res_dir)
-    install_data('misc/macos/atomes-project.icns', install_dir : res_dir)
-    install_data('misc/macos/atomes-coordinates.icns', install_dir : res_dir)
-    install_data('misc/macos/PkgInfo', install_dir : 'Contents')
-    install_data(src_info, install_dir : 'Contents')
-    install_data('misc/macos/atomes.sh', install_dir : 'Contents/MacOS', rename : 'atomes')
+    install_data ('misc/macos/atomes.icns', install_dir : res_dir)
+    install_data ('misc/macos/atomes-workspace.icns', install_dir : res_dir)
+    install_data ('misc/macos/atomes-project.icns', install_dir : res_dir)
+    install_data ('misc/macos/atomes-coordinates.icns', install_dir : res_dir)
+    install_data ('misc/macos/PkgInfo', install_dir : 'Contents')
+    install_data (src_info, install_dir : 'Contents')
+    install_data ('misc/macos/atomes.sh', install_mode : 'rwxr-xr-x', install_dir : 'Contents/MacOS', rename : 'atomes')
     meson.add_install_script ('misc/macos/install_lib.sh')
   endif
 # Doc
