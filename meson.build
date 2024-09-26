@@ -111,10 +111,6 @@ else
  compiler_args = [ '-O2', '-g']
  flags = '-O2 -g'
 endif
-if system == 'darwin'
-#  compiler_args = [compiler_args, '-Wl,@loader_path/../Resources/lib']
-#  compiler_args = [compiler_args, '-headerpad_max_install_names']
-endif
 
 flag_data = configuration_data ()
 fc_compiler = meson.get_compiler('fortran')
@@ -460,19 +456,19 @@ if system == 'windows'
   src_all = [src_all, src_win]
   test_win = windows.compile_resources (test_rc)
   src_test = [src_test, test_win]
-  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_test, 
-	c_args: compiler_args, fortran_args: compiler_args, install : true) 
+  executable ('atomes_startup_testing', sources: src_test, include_directories: inc_dir, dependencies: all_test, 
+	c_args: compiler_args, fortran_args: compiler_args, install: true) 
 else
-  executable ('atomes_startup_testing', sources : src_test, include_directories : inc_dir, dependencies: all_deps, 
-	c_args: compiler_args, fortran_args: compiler_args, install : true, install_dir : exec_dir) 
+  executable ('atomes_startup_testing', sources: src_test, include_directories: inc_dir, dependencies: all_deps, 
+	c_args: compiler_args, fortran_args: compiler_args, install: true, install_dir: exec_dir) 
 endif
 if system == 'darwin'
   application = '-'.join(prog_name, 'bin')
 else
   application = prog_name
 endif
-executable (application, sources : src_all, include_directories : inc_dir, dependencies: all_deps, 
-	c_args: compiler_args, fortran_args: compiler_args, install : true)
+executable (application, sources: src_all, include_directories: inc_dir, dependencies: all_deps, 
+	c_args: compiler_args, fortran_args: compiler_args, install: true)
 
 # Manual page
 install_man ('atomes.1')

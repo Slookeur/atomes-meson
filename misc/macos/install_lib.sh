@@ -5,9 +5,7 @@ lib_dir=${MESON_INSTALL_PREFIX}/Contents/Resources/lib
 function inst_tool
 {
   libf=`echo $1|sed 's/\// /g'|awk '{printf $NF}'`
-#  install_name_tool -change "$1" "@loader_path/../Resources/lib/$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
-  install_name_tool -change $1 "@executable_path/../Resources/lib/"$libf ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
-#  install_name_tool -change "$1" "../Resources/lib/$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
+  install_name_tool -change "$1" "@loader_path/../Resources/lib/$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
 }
 
 function lib_copy_dependency
@@ -17,6 +15,8 @@ function lib_copy_dependency
   if [ ! -f $lib_dir/$lib ]; then
     echo "Library: "$lib", in : "$lib_path
     cp -R -L $lib_path $lib_dir
+#    install_name_tool -id "@loader_path/../Resources/lib/"$lib $lib_dir/$lib 
+#    install_name_tool -id "@rpath/"$lib $lib_dir/$lib 
     local liste_dolib=`otool -L $lib_dir/$lib|grep 'dylib'|grep 'opt'|awk '{printf $1" "}'`    
     local liste_dopath=`otool -L $lib_path|grep 'rpath'|grep 'dylib'|sed 's/@rpath//g'|awk '{printf $1" "}'`
     local rpath=`otool -L $lib_path|head -n 1|sed 's/'$lib'//1'|sed 's/\/://g'`
@@ -59,3 +59,5 @@ done
 #Extra stuff because you'll never know
 cp -R -L /opt/homebrew/lib/gtk-4.0 $lib_dir
 cp -R -L /opt/homebrew/lib/gdk-pixbuf-2.0 $lib_dir
+
+install_name_tool -add_rpath "@loader_path/../Resources/lib" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin 
