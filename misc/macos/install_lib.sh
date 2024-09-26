@@ -4,9 +4,10 @@ lib_dir=${MESON_INSTALL_PREFIX}/Contents/Resources/lib
 
 function inst_tool
 {
-  lib_path=$1
-  libf=`echo $1|sed 's/\//\n/g'|grep '*.dylib'`
-  install_name_tool -change "@rapth/$1" "@executable_path/../$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
+  libf=`echo $1|sed 's/\// /g'|awk '{printf $NF}'`
+#  install_name_tool -change "$1" "@loader_path/../Resources/lib/$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
+  install_name_tool -change $1 "@executable_path/../Resources/lib/"$libf ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
+#  install_name_tool -change "$1" "../Resources/lib/$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
 }
 
 function lib_copy_dependency
