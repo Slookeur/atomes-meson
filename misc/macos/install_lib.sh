@@ -5,7 +5,7 @@ lib_dir=${MESON_INSTALL_PREFIX}/Contents/Resources/lib
 function inst_tool
 {
   libf=`echo $1|sed 's/\// /g'|awk '{printf $NF}'`
-  install_name_tool -change "$1" "@loader_path/../Resources/lib/$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
+#  install_name_tool -change "$1" "@loader_path/../Resources/lib/$libf" ${MESON_INSTALL_PREFIX}/Contents/MacOS/atomes-bin
 }
 
 function lib_copy_dependency

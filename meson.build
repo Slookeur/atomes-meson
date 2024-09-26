@@ -105,8 +105,13 @@ if build_type == 'release'
  compiler_args = ['-O3', '-g']
  flags = '-O3 -g'
 elif build_type == 'debug'
- compiler_args = ['-O0', '-g3', '-fvar-tracking', '-fbounds-check', '-fstack-protector-all']
- flags = '-O0 -g3 -fvar-tracking -fbounds-check -fstack-protector-all'
+  if system == 'darwin'
+    compiler_args = ['-O0', '-g2', '-fstack-protector-all']
+    flags = '-O0 -g2 -fstack-protector-all'
+  else 
+   compiler_args = ['-O0', '-g3', '-fvar-tracking', '-fbounds-check', '-fstack-protector-all']
+   flags = '-O0 -gs32 -fvar-tracking -fbounds-check -fstack-protector-all'
+  endif
 else
  compiler_args = [ '-O2', '-g']
  flags = '-O2 -g'
