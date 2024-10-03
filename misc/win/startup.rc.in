@@ -31,7 +31,7 @@ BEGIN
 		VALUE "FileVersion", "@PACKAGE_VERSION@"
 		VALUE "LegalCopyright", "\251 2024 S\351bastien Le Roux"
 		VALUE "OriginalFileName", "@PACKAGE@_startup_testing.exe"
-		VALUE "ProductName", "@PACKAGE@_startup_testing_@PACKAGE_VERSION@"
+		VALUE "ProductName", "@PACKAGE@_startup_testing @PACKAGE_VERSION@"
 		VALUE "ProductVersion", "@PACKAGE_VERSION@"
 	END
 	END
