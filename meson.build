@@ -6,7 +6,7 @@
 project ('atomes', 'c', 'fortran', 
         default_options : ['gtk=3', 'openmp=true'], 
         license : 'AGPL-3.0-or-later', 
-        version : '1.1.15')
+        version : '1.1.16')
 
 xml = dependency ('libxml-2.0')
 pangoft = dependency ('pangoft2')
