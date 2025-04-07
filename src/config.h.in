@@ -16,13 +16,13 @@ Copyright (C) 2022-2024 by CNRS and University of Strasbourg */
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Atomes major version */
+/* atomes major version */
 #define ATOMES_MAJOR_VERSION "@ATOMES_MAJOR_VERSION@"
 
-/* Atomes minor version */
+/* atomes minor version */
 #define ATOMES_MINOR_VERSION "@ATOMES_MINOR_VERSION@"
 
-/* Atomes patch version */
+/* atomes patch version */
 #define ATOMES_PATCH_VERSION "@ATOMES_MINOR_VERSION@"
 
 /* Name of package */
