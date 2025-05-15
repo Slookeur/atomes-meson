@@ -485,7 +485,7 @@ install_subdir ('data/library', install_dir : data_dir / 'atomes')
 if system == 'windows'
 # Doc
   install_data ('README.md', install_dir : data_dir / 'atomes')
-  install_data ('AUTHORS', install_dir : data_dir / 'atomes')
+  install_data ('AUTHORS.md', install_dir : data_dir / 'atomes')
   install_data ('ChangeLog', install_dir : data_dir / 'atomes')
 else
   if system == 'linux'
@@ -510,7 +510,7 @@ else
   endif
 # Doc
   install_data ('README.md', install_dir : data_dir / 'doc/atomes')
-  install_data ('AUTHORS', install_dir : data_dir / 'doc/atomes')
+  install_data ('AUTHORS.md', install_dir : data_dir / 'doc/atomes')
   install_data ('ChangeLog', install_dir : data_dir / 'doc/atomes')
 # Bash completion
   install_data ('atomes-completion.sh', rename : 'atomes', install_dir : data_dir / 'bash-completion/completions')
