@@ -17,7 +17,7 @@ DisableDirPage=yes
 DefaultGroupName=atomes
 LicenseFile=COPYING
 OutputDir=Setup
-OutputBaseFilename=atomes-latest-setup-no-win
+OutputBaseFilename=atomes-latest-setup
 SetupIconFile=setup.ico
 UninstallDisplayIcon=setup.ico
 Compression=lzma2
@@ -35,6 +35,7 @@ WizardStyle=modern
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Code]
 [Code]
 var
     maj : Integer;
@@ -133,7 +134,6 @@ Root: HKA; Subkey: "Software\Classes\atomesAtomicCoord-HIST\shell\open\command";
 Root: HKA; Subkey: "Software\Classes\Applications\atomes.exe\SupportedTypes"; ValueType: string; ValueName: ".hist"; ValueData: ""; Flags: uninsdeletekey
 Root: HKLM; SubKey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment\"; ValueType: string; ValueName: "Path"; ValueData: "{reg:HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\,Path};{app}"
 
-
 [Code]
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
@@ -163,7 +163,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "atomes\pixmaps\*"; DestDir: "{app}\pixmaps\"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "atomes\library\*"; DestDir: "{app}\library"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "atomes\bin-no-win\*"; DestDir: "{app}\bin\"; Components: main; Flags: ignoreversion
+Source: "atomes\bin\*"; DestDir: "{app}\bin\"; Components: main; Flags: ignoreversion
 Source: "atomes\etc\*"; DestDir: "{app}\etc\"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "atomes\lib\*"; DestDir: "{app}\lib\"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "atomes\share\*"; DestDir: "{app}\share\"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -184,11 +184,11 @@ Name: "{group}\atomes"; Filename: "{app}\bin\atomes.exe"; WorkingDir: "{app}"; I
 Name: "{group}\{cm:ProgramOnTheWeb,atomes}"; Filename: "https://atomes.ipcms.fr/"; Components: main;
 Name: "{group}\{cm:UninstallProgram,atomes}"; Filename: "{uninstallexe}"; IconFilename: "{app}\atomes.ico"; Components: main;
 Name: "{commondesktop}\atomes"; Filename: "{app}\bin\atomes.exe"; Tasks: desktopicon; WorkingDir: "{app}"; IconFilename: "{app}\atomes.ico"; Components: main
-; Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\atomes"; Filename: "{app}\bin\atomes.exe"; WorkingDir: "{app}"; Tasks: quicklaunchicon; IconFilename: "{app}\atomes.ico"; Components: main
+; Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Atomes"; Filename: "{app}\bin\atomes.exe"; WorkingDir: "{app}"; Tasks: quicklaunchicon; IconFilename: "{app}\atomes.ico"; Components: main
 
 [Components]
 Name: "main"; Description: "atomes"; Types: full compact custom   
 
 [Run]
-Filename: "{app}\bin\atomes.exe"; Description: "{cm:LaunchProgram,atomes}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\bin\atomes.exe"; Description: "{cm:LaunchProgram,Atomes}"; Flags: nowait postinstall skipifsilent
 

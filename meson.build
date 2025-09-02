@@ -6,7 +6,7 @@
 project ('atomes', 'c', 'fortran', 
         default_options : ['gtk=3', 'openmp=true'], 
         license : 'AGPL-3.0-or-later', 
-        version : '1.1.18')
+        version : '1.2.0')
 
 xml = dependency ('libxml-2.0')
 pangoft = dependency ('pangoft2')
@@ -183,6 +183,7 @@ src_gui = ['src/gui/gtk-misc.c',
 	'src/gui/chainscall.c', 
 	'src/gui/msdcall.c', 
 	'src/gui/spcall.c', 
+        'src/gui/preferences.c',
 	'src/gui/main.c']
 
 src_dlpoly = ['src/calc/dl_poly/dlp_active.c', 
@@ -355,6 +356,7 @@ src_draw = ['src/opengl/draw/d_atoms.c',
 	'src/opengl/draw/d_box.c', 
 	'src/opengl/draw/d_axis.c', 
 	'src/opengl/draw/d_measures.c', 
+        'src/opengl/draw/d_background.c',
 	'src/opengl/draw/ogl_text.c', 
 	'src/opengl/draw/movie.c', 
 	'src/opengl/draw/image.c']
