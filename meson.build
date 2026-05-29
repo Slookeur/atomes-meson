@@ -6,7 +6,7 @@
 project ('atomes', 'c', 'fortran', 
         default_options : ['gtk=3', 'openmp=true'], 
         license : 'AGPL-3.0-or-later', 
-        version : '1.2.0')
+        version : '1.3.0')
 
 xml = dependency ('libxml-2.0')
 pangoft = dependency ('pangoft2')
@@ -144,25 +144,31 @@ else
   exec_dir = get_option ('libexecdir')
 endif
 
+if system == 'linux'
+  data_prefix = get_option ('prefix') / data_dir
+  package_prefix =  data_prefix / 'atomes'
+  package_libexec = exec_dir
+  package_locale = data_prefix / 'locale'
+elif system == 'darwin'
+  package_prefix = '..' / 'Resources' / 'share' / 'atomes'
+  package_libexec = '..' / 'Resources' / get_option ('libexecdir')
+  package_locale = '..' / 'Resources' / 'locale'
+else
+  package_locale = 'locale'
+endif
 if system != 'windows'
-  if system == 'linux'
-    data_prefix = get_option ('prefix') / data_dir
-    package_prefix =  data_prefix / 'atomes'
-    package_libexec = exec_dir
-  else
-    package_prefix = '..' / 'Resources' / 'share' / 'atomes'
-    package_libexec = '..' / 'Resources' / get_option ('libexecdir')
-  endif
   d_package_prefix = ''.join ('-DPACKAGE_PREFIX="', package_prefix, '"')
   add_project_arguments (d_package_prefix, language : 'c')
   d_package_libexec = ''.join ('-DPACKAGE_LIBEXEC="', package_libexec, '"')
   add_project_arguments (d_package_libexec, language : 'c')
+  d_package_locale = ''.join ('-DPACKAGE_LOCALE="', package_locale, '"')
+  add_project_arguments (d_package_locale, language : 'c')
 endif
 
 all_inc = ['.', 'src', 'src/gui', 
 	'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
-        'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
-        'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
+  'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
+  'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
 inc_dir = include_directories(all_inc)
 
 src_top = ['src/global.c']
@@ -179,11 +185,12 @@ src_gui = ['src/gui/gtk-misc.c',
 	'src/gui/bdcall.c', 
 	'src/gui/grcall.c', 
 	'src/gui/sqcall.c', 
-	'src/gui/ringscall.c', 
+	'src/gui/sktcall.c'
+  'src/gui/ringscall.c', 
 	'src/gui/chainscall.c', 
 	'src/gui/msdcall.c', 
 	'src/gui/spcall.c', 
-        'src/gui/preferences.c',
+  'src/gui/preferences.c',
 	'src/gui/main.c']
 
 src_dlpoly = ['src/calc/dl_poly/dlp_active.c', 
@@ -273,11 +280,11 @@ src_proj = ['src/project/update_p.c',
 	'src/project/save_bond.c', 
 	'src/project/save_p.c', 
 	'src/project/project.c',
-        src_readers]
+  src_readers]
 
 src_work = ['src/workspace/modelinfo.c', 
 	'src/workspace/workinfo.c', 
-        'src/workspace/workspace.c']
+  'src/workspace/workspace.c']
 
 src_wingl = ['src/opengl/win/color_box.c', 
 	'src/opengl/win/m_style.c', 
@@ -356,7 +363,7 @@ src_draw = ['src/opengl/draw/d_atoms.c',
 	'src/opengl/draw/d_box.c', 
 	'src/opengl/draw/d_axis.c', 
 	'src/opengl/draw/d_measures.c', 
-        'src/opengl/draw/d_background.c',
+  'src/opengl/draw/d_background.c',
 	'src/opengl/draw/ogl_text.c', 
 	'src/opengl/draw/movie.c', 
 	'src/opengl/draw/image.c']
@@ -476,6 +483,21 @@ else
 endif
 executable (application, sources: src_all, include_directories: inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install: true)
+
+# Locales (gettext)
+msgfmt = find_program ('msgfmt', required : true)
+languages = ['en', 'fr']
+foreach lang : languages
+  custom_target (
+    'locale-' + lang,
+    input   : 'locale' / lang / 'atomes-messages.po',
+    output  : lang + '-atomes.mo',
+    command : [msgfmt, '-o', '@OUTPUT@', '@INPUT@'],
+    install : true,
+    install_dir    : package_locale / lang / 'LC_MESSAGES',
+    install_rename : 'atomes.mo',
+  )
+endforeach
 
 # Manual page
 install_man ('atomes.1')
