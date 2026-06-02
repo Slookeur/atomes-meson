@@ -138,9 +138,11 @@ add_project_arguments ('-DHAVE_CONFIG_H', language : 'fortran')
 if system == 'darwin'
   res_dir = 'Contents/Resources'
   data_dir = res_dir / 'share'
+  locale_dir = res_dir / 'locale'
   exec_dir = res_dir / get_option ('libexecdir')
 else
   data_dir = get_option ('datadir')
+  locale_dir = get_option ('localedir')
   exec_dir = get_option ('libexecdir')
 endif
 
@@ -165,10 +167,10 @@ if system != 'windows'
   add_project_arguments (d_package_locale, language : 'c')
 endif
 
-all_inc = ['.', 'src', 'src/gui', 
-	'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
-  'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
-  'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
+all_inc = ['.', 'src', 'src/gui', 'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 
+	'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
+	'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
+	'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
 inc_dir = include_directories(all_inc)
 
 src_top = ['src/global.c']
@@ -186,11 +188,11 @@ src_gui = ['src/gui/gtk-misc.c',
 	'src/gui/grcall.c', 
 	'src/gui/sqcall.c', 
 	'src/gui/sktcall.c',
-  'src/gui/ringscall.c', 
+	'src/gui/ringscall.c', 
 	'src/gui/chainscall.c', 
 	'src/gui/msdcall.c', 
 	'src/gui/spcall.c', 
-  'src/gui/preferences.c',
+	'src/gui/preferences.c',
 	'src/gui/main.c']
 
 src_dlpoly = ['src/calc/dl_poly/dlp_active.c', 
@@ -284,7 +286,7 @@ src_proj = ['src/project/update_p.c',
 
 src_work = ['src/workspace/modelinfo.c', 
 	'src/workspace/workinfo.c', 
-  'src/workspace/workspace.c']
+	'src/workspace/workspace.c']
 
 src_wingl = ['src/opengl/win/color_box.c', 
 	'src/opengl/win/m_style.c', 
@@ -363,7 +365,7 @@ src_draw = ['src/opengl/draw/d_atoms.c',
 	'src/opengl/draw/d_box.c', 
 	'src/opengl/draw/d_axis.c', 
 	'src/opengl/draw/d_measures.c', 
-  'src/opengl/draw/d_background.c',
+        'src/opengl/draw/d_background.c',
 	'src/opengl/draw/ogl_text.c', 
 	'src/opengl/draw/movie.c', 
 	'src/opengl/draw/image.c']
@@ -459,18 +461,7 @@ executable (application, sources: src_all, include_directories: inc_dir, depende
 	c_args: compiler_args, fortran_args: compiler_args, install: true)
 
 # Locales (gettext)
-msgfmt = find_program ('msgfmt', required : true)
-languages = ['en', 'fr']
-foreach lang : languages
-  custom_target (
-    'locale-' + lang,
-    input   : 'locale' / lang / 'atomes-messages.po',
-    output  : 'locale' / lang / 'atomes.mo',
-    command : [msgfmt, '-o', '@OUTPUT@', '@INPUT@'],
-    install : true,
-    install_dir : package_locale / lang / 'LC_MESSAGES',
-  )
-endforeach
+subdir('locale')
 
 # Manual page
 install_man ('atomes.1')
