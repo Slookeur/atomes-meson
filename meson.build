@@ -469,7 +469,7 @@ foreach lang : languages
     command : [msgfmt, '-o', '@OUTPUT@', '@INPUT@'],
     install : true,
     install_dir    : package_locale / lang / 'LC_MESSAGES',
-    install_rename : 'atomes.mo',
+    rename : 'atomes.mo',
   )
 endforeach
 
