@@ -465,7 +465,7 @@ foreach lang : languages
   custom_target (
     'locale-' + lang,
     input   : 'locale' / lang / 'atomes-messages.po',
-    output  : 'locael' / lang / 'atomes.mo',
+    output  : 'locale' / lang / 'atomes.mo',
     command : [msgfmt, '-o', '@OUTPUT@', '@INPUT@'],
     install : true,
     install_dir : package_locale / lang / 'LC_MESSAGES',
