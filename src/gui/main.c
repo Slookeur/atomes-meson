@@ -249,7 +249,7 @@ void print_version ()
       v_string = "2021-11";
       break;
     default:
-      v_string = "unknown"
+      v_string = "unknown";
       break;
   }
   printf ("OpenMP version         : %1.1f (%s)\n", v, v_string);
