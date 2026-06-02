@@ -185,7 +185,7 @@ src_gui = ['src/gui/gtk-misc.c',
 	'src/gui/bdcall.c', 
 	'src/gui/grcall.c', 
 	'src/gui/sqcall.c', 
-	'src/gui/sktcall.c'
+	'src/gui/sktcall.c',
   'src/gui/ringscall.c', 
 	'src/gui/chainscall.c', 
 	'src/gui/msdcall.c', 
