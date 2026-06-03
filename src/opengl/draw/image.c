@@ -135,7 +135,7 @@ G_MODULE_EXPORT void run_render_image (GtkDialog * info, gint response_id, gpoin
     project * this_proj = get_project_by_id (iopts -> proj);
     glwin * view = this_proj -> modelgl;
     // On macOS, the CoreAnimation layer may invalidate the current GL context
-    // between the file dialog callback and our OpenGL calls. Without explicitly
+    // between the file dialog callback and the OpenGL calls. Without explicitly
     // making the context current, FBO creation and rendering silently fail or
     // operate on the wrong context, causing partial or missing image captures.
     gtk_gl_area_make_current ((GtkGLArea *)view -> plot);
