@@ -1257,6 +1257,9 @@ G_MODULE_EXPORT void run_save_movie (GtkDialog * info, gint response_id, gpointe
     for (i=0; i<2; i++) tmp_pixels[i] = view -> pixels[i];
     view -> pixels[0] = vopts -> video_res[0];
     view -> pixels[1] = vopts -> video_res[1];
+    // On macOS, the CoreAnimation layer may invalidate the current GL context
+    // between the file dialog callback and our OpenGL calls.
+    gtk_gl_area_make_current ((GtkGLArea *)view -> plot);
     init_frame_buffer (vopts -> video_res[0], vopts -> video_res[1]);
     init_opengl ();
     re_create_all_md_shaders (view);
