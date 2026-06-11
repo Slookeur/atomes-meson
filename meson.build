@@ -6,7 +6,7 @@
 project ('atomes', 'c', 'fortran', 
         default_options : ['gtk=3', 'openmp=true'], 
         license : 'AGPL-3.0-or-later', 
-        version : '1.2.0')
+        version : '1.3.0')
 
 xml = dependency ('libxml-2.0')
 pangoft = dependency ('pangoft2')
@@ -138,31 +138,39 @@ add_project_arguments ('-DHAVE_CONFIG_H', language : 'fortran')
 if system == 'darwin'
   res_dir = 'Contents/Resources'
   data_dir = res_dir / 'share'
+  locale_dir = res_dir / 'locale'
   exec_dir = res_dir / get_option ('libexecdir')
 else
   data_dir = get_option ('datadir')
+  locale_dir = get_option ('localedir')
   exec_dir = get_option ('libexecdir')
 endif
 
+if system == 'linux'
+  data_prefix = get_option ('prefix') / data_dir
+  package_prefix =  data_prefix / 'atomes'
+  package_libexec = exec_dir
+  package_locale = data_prefix / 'locale'
+elif system == 'darwin'
+  package_prefix = '..' / 'Resources' / 'share' / 'atomes'
+  package_libexec = '..' / 'Resources' / get_option ('libexecdir')
+  package_locale = '..' / 'Resources' / 'locale'
+else
+  package_locale = 'locale'
+endif
 if system != 'windows'
-  if system == 'linux'
-    data_prefix = get_option ('prefix') / data_dir
-    package_prefix =  data_prefix / 'atomes'
-    package_libexec = exec_dir
-  else
-    package_prefix = '..' / 'Resources' / 'share' / 'atomes'
-    package_libexec = '..' / 'Resources' / get_option ('libexecdir')
-  endif
   d_package_prefix = ''.join ('-DPACKAGE_PREFIX="', package_prefix, '"')
   add_project_arguments (d_package_prefix, language : 'c')
   d_package_libexec = ''.join ('-DPACKAGE_LIBEXEC="', package_libexec, '"')
   add_project_arguments (d_package_libexec, language : 'c')
+  d_package_locale = ''.join ('-DPACKAGE_LOCALE="', package_locale, '"')
+  add_project_arguments (d_package_locale, language : 'c')
 endif
 
-all_inc = ['.', 'src', 'src/gui', 
-	'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
-        'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
-        'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
+all_inc = ['.', 'src', 'src/gui', 'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 
+	'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
+	'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
+	'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
 inc_dir = include_directories(all_inc)
 
 src_top = ['src/global.c']
@@ -179,11 +187,12 @@ src_gui = ['src/gui/gtk-misc.c',
 	'src/gui/bdcall.c', 
 	'src/gui/grcall.c', 
 	'src/gui/sqcall.c', 
+	'src/gui/sktcall.c',
 	'src/gui/ringscall.c', 
 	'src/gui/chainscall.c', 
 	'src/gui/msdcall.c', 
 	'src/gui/spcall.c', 
-        'src/gui/preferences.c',
+	'src/gui/preferences.c',
 	'src/gui/main.c']
 
 src_dlpoly = ['src/calc/dl_poly/dlp_active.c', 
@@ -273,11 +282,11 @@ src_proj = ['src/project/update_p.c',
 	'src/project/save_bond.c', 
 	'src/project/save_p.c', 
 	'src/project/project.c',
-        src_readers]
+  src_readers]
 
 src_work = ['src/workspace/modelinfo.c', 
 	'src/workspace/workinfo.c', 
-        'src/workspace/workspace.c']
+	'src/workspace/workspace.c']
 
 src_wingl = ['src/opengl/win/color_box.c', 
 	'src/opengl/win/m_style.c', 
@@ -376,7 +385,6 @@ src_f = ['src/fortran/allocbonds.F90',
 	'src/fortran/allocmsd.F90', 
 	'src/fortran/angles.F90', 
 	'src/fortran/bonds.F90', 
-	'src/fortran/c3d.F90', 
 	'src/fortran/chains.F90', 
 	'src/fortran/chains_ogl.F90', 
 	'src/fortran/chemistry.F90', 
@@ -407,49 +415,24 @@ src_f = ['src/fortran/allocbonds.F90',
 	'src/fortran/molecules.F90', 
 	'src/fortran/msd.F90', 
 	'src/fortran/parameters.F90', 
-	'src/fortran/pdb.F90', 
 	'src/fortran/prepdata.F90', 
 	'src/fortran/resrings.F90', 
 	'src/fortran/rings-guttman.F90', 
 	'src/fortran/rings-king.F90', 
 	'src/fortran/rings_ogl.F90', 
 	'src/fortran/rings-primitive.F90', 
-	'src/fortran/sk.F90', 
 	'src/fortran/spherical.F90', 
 	'src/fortran/sq.F90', 
+	'src/fortran/sk.F90', 
+	'src/fortran/skt.F90', 
 	'src/fortran/threads.F90', 
-	'src/fortran/trj.F90', 
 	'src/fortran/utils.F90', 
-	'src/fortran/vas.F90', 
 	'src/fortran/writedata.F90', 
-	'src/fortran/xyz.F90', 
-	'src/fortran/dvtb.F90',  
-	'src/fortran/escs.F90',  
-	'src/fortran/fzbt.F90',  
-	'src/fortran/gr.F90',  
-	'src/fortran/grfft.F90',  
-	'src/fortran/initchains.F90', 
-	'src/fortran/initrings.F90', 
-	'src/fortran/lattice.F90', 
-	'src/fortran/mendeleiev.F90', 
-	'src/fortran/molecules.F90', 
-	'src/fortran/msd.F90', 
-	'src/fortran/parameters.F90', 
+	'src/fortran/c3d.F90', 
+	'src/fortran/trj.F90', 
+	'src/fortran/vas.F90', 
 	'src/fortran/pdb.F90', 
-	'src/fortran/prepdata.F90', 
-	'src/fortran/resrings.F90', 
-	'src/fortran/rings-guttman.F90', 
-	'src/fortran/rings-king.F90', 
-	'src/fortran/rings_ogl.F90', 
-	'src/fortran/rings-primitive.F90', 
-	'src/fortran/sk.F90', 
-	'src/fortran/spherical.F90', 
-	'src/fortran/sq.F90', 
-	'src/fortran/threads.F90', 
 	'src/fortran/trj.F90', 
-	'src/fortran/utils.F90', 
-	'src/fortran/vas.F90', 
-	'src/fortran/writedata.F90', 
 	'src/fortran/xyz.F90']
 
 # atomes sources
@@ -477,8 +460,11 @@ endif
 executable (application, sources: src_all, include_directories: inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install: true)
 
+# Locales (gettext)
+subdir('locale')
+
 # Manual page
-install_man ('atomes.1')
+subdir('man')
 
 # Data
 install_subdir ('data/pixmaps', install_dir : data_dir / 'atomes')
