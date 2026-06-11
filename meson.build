@@ -6,7 +6,7 @@
 project ('atomes', 'c', 'fortran', 
         default_options : ['gtk=3', 'openmp=true'], 
         license : 'AGPL-3.0-or-later', 
-        version : '1.3.0')
+        version : '1.3.1')
 
 xml = dependency ('libxml-2.0')
 pangoft = dependency ('pangoft2')
@@ -464,7 +464,7 @@ executable (application, sources: src_all, include_directories: inc_dir, depende
 subdir('locale')
 
 # Manual page
-install_man ('atomes.1')
+subdir('man')
 
 # Data
 install_subdir ('data/pixmaps', install_dir : data_dir / 'atomes')
