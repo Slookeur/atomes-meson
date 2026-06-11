@@ -1,0 +1,278 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" (C) Copyright 2022-2026 Sébastien Le Roux <sebastien.leroux@ipcms.unistra.fr>,
+.\"
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH atomes 1 "5 juin 2026"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NOM
+atomes \- une boîte à outils pour analyser, visualiser et créer/éditer des modèles 3D à l'échelle atomique
+.SH SYNOPSIS
+.B atomes
+.RI [ OPTIONS ] " fichiers" ...
+.br
+.B atomes
+.RI [ OPTIONS_IMAGES ] " fichiers" ...
+.br
+.SH DESCRIPTION
+Cette page de manuel documente brièvement la commande
+.B atomes
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBatomes\fP est une boîte à outils pour analyser, visualiser et créer/éditer/ des modèles 3D à l'échelle atomique.
+.br
+L'espace de travail permet d'ouvrir et gérer plusieurs projets qui peuvent échanger des données: résultats d'analyses, coordonées atomiques ... 
+.br
+\fBatomes\fP propose également un système avancé de préparation aux calculs de dynamique moléculaire pour plusieurs outils connus:
+.RS
+.B Dynamique Moléculaire classique:
+.IR DLPOLY
+et 
+.IR LAMMPS
+.RE
+.RS
+.B Dynamique Moléculaire ab-initio:
+.IR CPMD
+et  
+.IR CP2K
+.RE
+.RS
+.B Dynamique moléculaire hybride (QM-MM):
+.IR CPMD
+et  
+.IR CP2K
+.RE
+
+.SH OPTIONS
+Ce programme utilise un jeu d'options spécifique pour décrire les formats de fichiers de coordonnées atomiques (ex: -xyz), 
+.br
+mais suit autrement la syntaxe GNU habituelle, avec des options longues commençant par 2 tirets (`-'). 
+.br
+\fBatomes\fP essaye toujours d'ouvrir un fichier en se basant sur son extension, 
+.br
+il est toutefois possible de forcer le format de fichier à utiliser en utilisant la(les) option(s) associées. 
+.br
+Un résumé des options est présenté plus bas. 
+.
+.TP
+.B \-h, \-\-help
+Afficher un résumé des options
+.TP
+.B \-v, \-\-version
+Afficher la version du programme
+.TP
+.B \-awf, \-AWF
+Ouvrir un fichier espace de travail d'atomes
+.TP
+.B \-apf, \-APF
+Ouvrir un fichier projet d'atomes
+.TP
+.B \-xyz, \-XYZ
+Importer des coordonnées atomiques au format XYZ
+.TP
+.B \-c3d, \-C3D
+Importer des coordonnées atomiques au format Chem3D
+.TP
+.B \-trj, \-TRJ
+Importer des coordonnées atomiques au format CPMD
+.TP
+.B \-xdatcar, \-XDATCAR
+Importer des coordonnées atomiques au format VASP
+.TP
+.B \-pdb, \-PDB, \-ent, \-ENT
+Importer des coordonnées atomiques au format PDB
+.TP
+.B \-cif, \-CIF
+Importer des coordonnées atomiques au format CIF
+.TP
+.B \-hist, \-HIST
+Importer des coordonnées atomiques au format DL_POLY history
+.TP
+.B \-ipf, \-IPF
+Importer un projet I.S.A.A.C.S.
+.TP
+.SH EXAMPLES 
+.TP
+        atomes projet.apf fichier.xyz -pdb autre_fichier
+.br
+ atomes -awf espace_de_travail -apf projet -xyz fichier -pdb autre_fichier
+.SH OPTIONS_IMAGE
+\fBatomes\fP peut être utilisé pour généré des images des modèles atomiques directement depuis la ligne de commandes.
+.TP
+.B \-p, \-\-png, \-\-render-png
+Générer une image format PNG
+.TP
+.B \-j, \-\-jpg, \-\-render-jpg
+Générer une image au format JPG
+.TP
+.B \-o, \-\-output=[FICHIER]
+Nome de l'image (par défaut: image.png ou image.jpg)
+.TP
+.B \-W, \-\-width=[TAILLE_X]
+Largeur de l'image en pixels, TAILLE_X doit être > 0
+.TP
+.B \-H, \-\-height=[TAILLE_Y]
+Hauteur de l'image en pixels, TAILLE_Y doit être > 0
+.PP
+Selon le fichier devant être rendu, les paramêtre par défaut du rendu sont obtenus:
+.br
+  - Pour un fichier projet \fBatomes\fP (*.apf): dans le fichier projet en question.
+.br
+  - Pour un autre type de coordonnées atomiques (ex: .xyz): selon les préférences utilisateurs dans \fBatomes.pml\fP
+.br
+Dans chaque cas, plusieurs paramêtres peuvent être temporairement modifiés 
+.br
+en utilisant des options depuis la ligne de commandes:
+.TP
+.B \-s, \-\-style=[STYLE]
+Style visuel, parmi:
+.br 
+   - Boules et bâtonnets:           balls_and_sticks, ball_and_stick, b_and_s, bs, b
+.br
+   - Fils de fer:                   wireframes, wireframe, wires, wire, wi, w
+.br
+   - Rayons covalent:               covalent_radius, covalent, cov_rad, cov, co, cr
+.br
+   - Rayons ioniques:               ionic_radius, ionic_rad, ionic, ion, ir
+.br
+   - Rayons de van der Waals:       van_der_waals_radius, van_der_waals, vdw_radius, vdw_rad, vdw, vr
+.br
+   - Rayons cristallins:            in_crystal_radius, crystal_radius, in_crystal, crystal, cryst, cr
+.br
+   - Sphères:                       spheres, sphere, sph, sp, s
+.br
+   - Cylindres:                     cylinders, cylinder, cyl, cy, c
+.br
+   - Points:                        dots, dot, d
+.TP
+.B \-r, \-\-rep=[REP]
+Style de représentation, parmi:
+.br
+   - Orthographique:                orthograhpic, ortho, 0
+.br
+   - Perpsective (par défaut):      perspective, persp, 1 
+.TP
+.B \-b, \-\-box=[STYLE]
+Déclanche l'affiche de la boîte, si présente, et défini le style
+.br
+Style, parmi:
+.br
+   - Fils de fer:                   wireframes, wireframe, wires, wire, wi, w
+.br
+   - Cylindres:                     cylinders, cylinder, cyl, cy, c
+.TP
+.B \-a, \-\-axis=[STYLE]
+.br
+Déclanche l'affichage des axes, et défini le style
+.br
+Style, parmi:
+.br
+   - Fils de fer:                   wireframes, wireframe, wires, wire, wi, w
+.br
+   - Cylindres :                    cylinders, cylinder, cyl, cy, c
+.TP
+.B \-e, \-\-acolor=[PALETTE]
+Définie la palette de couleur pour les atomes et les liaisons
+.br
+   - Espèce(s) chimique(s):         species, spec, sp, 0
+.br
+   - Coordination(s) totale(s):     total_coordiantion, total_coord, tc, 1
+.br
+   - Coordination(s) partielle(s):  partial_coordiantion, partial_coord, pc, 2
+.br
+   - Fragment(s)*:                  fragment, frag, fg, 3
+.br
+   - Molécule(s)*:                  molecule, mol, mo, 4
+.br
+* si nécessaire déclanche l'analyse correspondante
+.TP
+.B \-t, \-\-pcolor=[PALETTE]
+Affiche les polyèdres de coordination, définie la palette de couleur à utiliser
+.TP
+.B \-C, \-\-box_color=[COULEUR]
+Couleur de la boîte, COULEUR en codage héxadecimal, 3 ou 6 lettres, avec ou sans #
+.TP
+.B \-G, \-\-back_grad=[GRAD]
+Type de gradient d'arriètre plan, parmi:
+.br 
+  - Pas de gradient:                none, no, 0
+.br
+  - Linéaire:                       linear, lin, 1
+.br
+  - Circulaire:                     circular, circ, 2
+.TP
+.B \-B, \-\-back_color=[COULEUR]
+Couleur d'arrière plan, COULEUR en codage héxadecimal, 3 ou 6 lettres, avec ou sans #
+.br 
+Déclanche l'utilisation d'une couleur unique pour l'arrière plan (pas de gradient)
+.TP
+.B \-D, \-\-back_dir=[DIR]
+Direction du gradient d'arrière plan, parmi: 
+.br
+  - Gradient linéraire
+.br
+    - Droite à gauche:              0
+.br
+    - Haut en bas:                  1
+.br
+    - Bas droit vers haut gauche:   2
+.br
+    - Haut droit vers bas gauche:   3
+.br
+  - Gradient circulaire
+.br
+    - Droite à gauche:              0
+.br
+    - Gauche à droite:              1
+.br
+    - Haut en bas:                  2
+.br
+    - Bas en haut:                  3
+.br
+    - Bas droit vers haut gauche:   4
+.br
+    - Bas gauche vers haut droit:   5
+.br
+    - Haut droit vers bas gauche:   6
+.br
+    - Haut gauche vers bas droit:   7
+.br
+    - Depuis le centre:             8
+.TP
+.B \-P, \-\-back_pos=[POS]
+Position du point mixe des couleurs du gradient entre [0.0 - 1.0]
+.TP
+.B \-U, \-\-grad_col_a=[COULEUR]
+Couleur initiale du gradient, COULEUR en codage héxadecimal, 3 ou 6 lettres, avec ou sans #
+.TP
+.B \-V, \-\-grad_col_b=[COULEUR]
+Couleur finale du gradient, COULEUR en codage héxadecimal, 3 ou 6 lettres, avec ou sans #
+.TP
+.SH EXEMPLES 
+.TP
+        atomes --render-png --width=1920 --height=1024 -o projet.png projet.apf
+ atomes -j -W 1920 -H 1024 --output=mon_fichier.jpg fichier.pdb -s cyl -e pc
+
+.SH VOIR AUSSI
+.BR https://atomes.ipcms.fr/
+.BR 
+
+.SH AUTEUR
+Cette page de manuel a été créée par Dr. Sébastien Le Roux <sebastien.leroux@ipcms.unistra.fr>
+
+.SH SIGNALER UNE ERREUR
+Signaler tout erreur à <https://github.com/Slookeur/atomes-GNU/issues>.

@@ -464,7 +464,7 @@ executable (application, sources: src_all, include_directories: inc_dir, depende
 subdir('locale')
 
 # Manual page
-install_man ('atomes.1')
+subdir('man')
 
 # Data
 install_subdir ('data/pixmaps', install_dir : data_dir / 'atomes')
