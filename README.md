@@ -4,8 +4,7 @@
 ![OpenSSF Best Practices][openssf]
 ![Development Status][dev_status]
 
-[atomes][atomes] is a Free (Open Source) cross-platform software licensed under the terms 
-of the Affero GPL v3+ license. 
+[atomes][atomes] is a Free (Open Source) cross-platform software licensed under the terms of the Affero GPL v3+ license. 
 **atomes** is a toolbox developed to analyze, to visualize and to create/edit three-dimensional atomic scale models.
 It offers a workspace that allows to have many projects opened simultaneously.
 
@@ -31,7 +30,7 @@ To prepare the input ﬁlles for these calculations is likely to be the key, and
 
 ## Build instructions
 
-To build ***atomes***: 
+To build **atomes**: 
 
 ```
 meson setup buildir
@@ -59,7 +58,7 @@ meson setup buildir -Dgtk=4
 
 Note the default flag is: `gtk=3`
 
-  2. Build ***atomes***
+  2. Build **atomes**
 
 ```
 meson compile -C buildir
@@ -70,8 +69,8 @@ Here are some issues with GTK4 that cannot be sovled for the time being:
 
 #### Building the serial version of ***atomes***
 
-By default, and providing that the compiler supports it, ***atomes*** uses [OpenMP][openmp] to parallelize several calculations over the CPU cores. 
-It is possible to turn this off, and to build a serial version of ***atomes***, to do that:
+By default, and providing that the compiler supports it, **atomes** uses [OpenMP][openmp] to parallelize several calculations over the CPU cores. 
+It is possible to turn this off, and to build a serial version of **atomes**, to do that:
 
   1. Configure using the `-Dopenmp=false` option:
 
@@ -81,7 +80,7 @@ meson setup buildir -Dopenmp=false
 
 Note the default flag is `-Dopenmp=true`
 
-  2. Build ***atomes***
+  2. Build **atomes**
 
 ```
 meson compile -C buildir
@@ -96,7 +95,7 @@ sudo meson install -C buildir
 ## Who's behind ***atomes***
 
 
-***atomes*** is developed by [Dr. Sébastien Le Roux][slr], research engineer for the [CNRS][cnrs]
+**atomes** is developed by [Dr. Sébastien Le Roux][slr], research engineer for the [CNRS][cnrs]
 
 <p align="center">
   <a href="https://www.cnrs.fr/"><img width="100" src="https://upload.wikimedia.org/wikipedia/fr/thumb/7/72/Logo_Centre_national_de_la_recherche_scientifique_%282023-%29.svg/langfr-250px-Logo_Centre_national_de_la_recherche_scientifique_%282023-%29.svg.png" alt="CNRS logo" align="center"></a>
@@ -110,10 +109,11 @@ sudo meson install -C buildir
 
 ## Documentation
 
-User documenation is hosted on [GitHub][github] here: [atomes documentation][atomes-doc]
+The documentation is hosted on [GitHub][github] here: [atomes documentation][atomes-doc]
+
+Developer contribution guidelines are hosted on [GitHub][github] here: [atomes developer guidelines][devel-guide]
 
 Developer documentation is hosted on [GitHub][github] here: [atomes developer documentation][devel-doc]
-
 
 ## Tutorials
 
@@ -131,6 +131,7 @@ Tutorial are regrouped and hosted on [GitHub][github] here: [atomes tutorials][a
 [atomes-doc]:https://slookeur.github.io/atomes-doc/
 [atomes-tuto]:https://slookeur.github.io/atomes-tuto/
 [devel-doc]:https://slookeur.github.io/atomes-doxygen/
+[devel-guide]:https://github.com/Slookeur/atomes/blob/main/DEVELOPER.md
 [dlpoly]:https://www.scd.stfc.ac.uk/Pages/DL_POLY.aspx
 [lammps]:https://lammps.sandia.gov/
 [cpmd]:http://www.cpmd.org
