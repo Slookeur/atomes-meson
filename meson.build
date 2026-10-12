@@ -6,7 +6,7 @@
 project ('atomes', 'c', 'fortran', 
         default_options : ['gtk=3', 'openmp=true'], 
         license : 'AGPL-3.0-or-later', 
-        version : '1.3.1')
+        version : '1.3.2')
 
 xml = dependency ('libxml-2.0')
 pangoft = dependency ('pangoft2')
@@ -42,16 +42,20 @@ else
   endif
   if system == 'linux'
     add_project_arguments ('-DLINUX', language : 'c')
-    au = find_program ('appstream-util', required : true)
+    au = find_program ('appstreamcli', required : true)
     dfi = find_program ('desktop-file-install', required : true)
     guic = find_program ('gtk-update-icon-cache', required : true)
     udd = find_program ('update-desktop-database', required : true)
     umd = find_program ('update-mime-database', required : true)
   elif system == 'windows'
-    res = find_program ('windres', required : false)
     add_project_arguments ('-DWINDOWS', language : 'c')
+    res = find_program ('windres', required : false)
   endif
 endif
+if system != 'windows'
+  gnome = import('gnome')
+endif
+
 all_deps = [all_deps, gtk]
 all_test = [all_test, gtk]
 
@@ -167,8 +171,8 @@ if system != 'windows'
   add_project_arguments (d_package_locale, language : 'c')
 endif
 
-all_inc = ['.', 'src', 'src/gui', 'src/calc', 'src/calc/dl_poly', 'src/calc/lammps', 
-	'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
+all_inc = ['.', 'src', 'src/d-bus', 'src/gui', 'src/calc', 'src/calc/dl_poly', 
+  'src/calc/lammps', 'src/calc/cpmd', 'src/calc/cp2k', 'src/calc/force_fields',
 	'src/curve', 'src/project', 'src/project/readers', 'src/workspace',
 	'src/opengl', 'src/opengl/win', 'src/opengl/edit', 'src/opengl/draw']
 inc_dir = include_directories(all_inc)
@@ -194,6 +198,15 @@ src_gui = ['src/gui/gtk-misc.c',
 	'src/gui/spcall.c', 
 	'src/gui/preferences.c',
 	'src/gui/main.c']
+
+if system != 'windows'
+  dbus_xml = 'src/d-bus/fr.ipcms.atomes.Instance.xml'
+  dbus_c = 'fr_ipcms_atomes-Instance'
+  # Règle de génération
+  dbus_gen = gnome.gdbus_codegen(dbus_c, dbus_xml, interface_prefix: 'fr.ipcms.atomes.')
+  # Ajouter les fichiers générés aux sources
+  src_dbus = dbus_gen
+endif
 
 src_dlpoly = ['src/calc/dl_poly/dlp_active.c', 
 	'src/calc/dl_poly/dlp_control.c', 
@@ -261,6 +274,7 @@ src_readers = ['src/project/readers/read_isaacs.c',
 	'src/project/readers/read_vas.c', 
 	'src/project/readers/read_pdb.c', 
 	'src/project/readers/read_hist.c', 
+	'src/project/readers/read_sml.c', 
 	'src/project/readers/read_npt.c']
 
 src_proj = ['src/project/update_p.c', 
@@ -365,7 +379,7 @@ src_draw = ['src/opengl/draw/d_atoms.c',
 	'src/opengl/draw/d_box.c', 
 	'src/opengl/draw/d_axis.c', 
 	'src/opengl/draw/d_measures.c', 
-        'src/opengl/draw/d_background.c',
+  'src/opengl/draw/d_background.c',
 	'src/opengl/draw/ogl_text.c', 
 	'src/opengl/draw/movie.c', 
 	'src/opengl/draw/image.c']
@@ -449,6 +463,7 @@ if system == 'windows'
   executable ('atomes_startup_testing', sources: src_test, include_directories: inc_dir, dependencies: all_test, 
 	c_args: compiler_args, fortran_args: compiler_args, install: true) 
 else
+  src_all = [src_all, src_dbus]
   executable ('atomes_startup_testing', sources: src_test, include_directories: inc_dir, dependencies: all_deps, 
 	c_args: compiler_args, fortran_args: compiler_args, install: true, install_dir: exec_dir) 
 endif
