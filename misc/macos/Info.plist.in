@@ -40,7 +40,7 @@
 			<key>CFBundleTypeName</key>
 			<string>atomes workspace file</string>
 			<key>CFBundleTypeRole</key>
-			<string>None</string>
+			<string>Editor</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -52,7 +52,7 @@
 			<key>CFBundleTypeName</key>
 			<string>atomes project file</string>
 			<key>CFBundleTypeRole</key>
-			<string>None</string>
+			<string>Editor</string>
 		</dict>
 	</array>
 	<key>CFBundleInfoDictionaryVersion</key>
