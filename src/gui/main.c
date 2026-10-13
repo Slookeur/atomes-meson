@@ -1422,6 +1422,11 @@ static gboolean check_existing_win32_instance ()
 }
 #endif /* G_OS_WIN32 */
 
+/*!
+  \fn static void process_pending_files ()
+
+  \brief open pending file(s)
+*/
 static void process_pending_files ()
 {
   ftmp = flist;
@@ -1588,11 +1593,9 @@ G_MODULE_EXPORT void on_atomes_open (GApplication * app, GFile ** files, gint n_
     }
   }
 
-  if (atomes_main_window != NULL)
-  {
-    process_pending_files ();
-    gtk_window_present (GTK_WINDOW(atomes_main_window));
-  }
+  if (! atomes_main_window) g_application_activate (app);
+  process_pending_files ();
+  gtk_window_present (GTK_WINDOW(atomes_main_window));
 }
 
 /*!
