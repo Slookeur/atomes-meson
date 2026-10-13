@@ -1451,8 +1451,8 @@ static void process_pending_files ()
     {
       // Add project(s) to workspace
       open_this_data_file (ftmp -> file_type, ftmp -> file_name);
+      g_free (ftmp -> file_name);
     }
-    g_free (ftmp -> file_name);
     ftmp = ftmp -> next;
   }
   g_free (flist);
