@@ -170,5 +170,18 @@ if /bin/expr "x$1" : '^x-psn_' > /dev/null; then
     shift 1
 fi
 
+# --- Debug comments ---
+# Uncomment the next lines to debug atomes
+
+#LOG="$HOME/Desktop/atomes-debug.log"
+#exec >> "$LOG" 2>&1
+
+#echo "========== Lancement : $(date) =========="
+#echo "PWD=$PWD"
+#echo "Arguments reçus : $#"
+#printf 'Argument : <%s>\n' "$@"
+
+# --- End Debug comments ---
+
 cd $bundle_contents/MacOS/
 $EXEC "./$name-bin" "$@" $EXTRA_ARGS
